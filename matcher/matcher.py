@@ -196,3 +196,37 @@ for listing in test_listings:
         print(f"Confidence: {result['confidence_score']}% — {result['verdict']}")
         print(f"Hazard: {result['hazard'][:80]}")
         print(f"Scoring breakdown: {result['reasons']}")
+
+        # Step 9 — save matcher results to SQLite
+# in real use this will process actual eBay listings
+# for now we save our test results to confirm the pipeline works
+
+print("\n--- SAVING RESULTS TO DATABASE ---")
+
+# create a list of results from our test listings
+final_results = []
+for listing in test_listings:
+    result = analyze_listing(listing)
+    if result:
+        final_results.append(result)
+
+# convert to dataframe
+results_df = pd.DataFrame(final_results)
+
+# drop the reasons column for storage (it's a list, hard to store in SQL)
+results_df['reasons'] = results_df['reasons'].apply(lambda x: ' | '.join(x))
+
+# save to database
+conn = sqlite3.connect('data/cpsc_recalls.db')
+results_df.to_sql('matches', conn, if_exists='replace', index=False)
+conn.close()
+
+print(f"Saved {len(results_df)} matches to database")
+
+# verify
+conn = sqlite3.connect('data/cpsc_recalls.db')
+saved = pd.read_sql("SELECT listing_title, recalled_product, confidence_score, verdict FROM matches ORDER BY confidence_score DESC", conn)
+conn.close()
+
+print("\nSaved matches:")
+print(saved.to_string())
