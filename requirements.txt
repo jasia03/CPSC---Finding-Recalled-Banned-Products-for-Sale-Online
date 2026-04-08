@@ -1,0 +1,11 @@
+requests
+beautifulsoup4
+pandas
+scikit-learn
+sentence-transformers
+streamlit
+plotly
+imagehash
+Pillow
+python-dotenv
+ebaysdk
