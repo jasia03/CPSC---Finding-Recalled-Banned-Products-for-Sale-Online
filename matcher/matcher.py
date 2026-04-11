@@ -230,3 +230,47 @@ conn.close()
 
 print("\nSaved matches:")
 print(saved.to_string())
+
+# Step 10 — run matcher on real eBay listings
+print("\n--- RUNNING MATCHER ON REAL EBAY LISTINGS ---")
+
+# load the real ebay listings
+conn = sqlite3.connect('data/cpsc_recalls.db')
+ebay_listings = pd.read_sql("SELECT * FROM ebay_listings", conn)
+conn.close()
+
+print(f"Loaded {len(ebay_listings)} real eBay listings")
+
+real_results = []
+
+for index, row in ebay_listings.iterrows():
+    listing_title = row['listing_title']
+    result = analyze_listing(listing_title)
+
+    if result:
+        # add the eBay listing details to the result
+        result['price'] = row['price']
+        result['location'] = row['location']
+        result['url'] = row['url']
+        result['platform'] = row['platform']
+        result['searched_product'] = row['searched_product']
+        real_results.append(result)
+
+print(f"Analyzed {len(real_results)} listings")
+
+# save to database
+real_df = pd.DataFrame(real_results)
+real_df['reasons'] = real_df['reasons'].apply(lambda x: ' | '.join(x))
+
+conn = sqlite3.connect('data/cpsc_recalls.db')
+real_df.to_sql('matches', conn, if_exists='replace', index=False)
+conn.close()
+
+print(f"Saved {len(real_df)} matches to database")
+
+# show top 10 highest confidence matches
+print("\nTop 10 highest confidence matches:")
+top = real_df.nlargest(10, 'confidence_score')[
+    ['listing_title', 'recalled_product', 'confidence_score', 'verdict', 'price']
+]
+print(top.to_string())
