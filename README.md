@@ -1,4 +1,8 @@
 # CPSC---Finding-Recalled-Banned-Products-for-Sale-Online
+
+## Live Demo
+🔗 [View the live dashboard here](https://cpsc---finding-recalled-banned-appucts-for-sale-online-amzepch.streamlit.app/)
+
 # CPSC Recall Finder
 ### George Mason University — Challenge X
 
