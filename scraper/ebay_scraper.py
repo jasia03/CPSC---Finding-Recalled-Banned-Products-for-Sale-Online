@@ -95,6 +95,14 @@ def search_ebay(product_name, recall_number, token, max_results=10):
             condition = item.get('condition', 'Unknown')
             location = item.get('itemLocation', {}).get('country', 'Unknown')
 
+            # get image URL directly from API response
+            image_url = ''
+            thumbnails = item.get('thumbnailImages', [])
+            if thumbnails:
+                image_url = thumbnails[0].get('imageUrl', '')
+            if not image_url:
+                image_url = item.get('image', {}).get('imageUrl', '')
+
             results.append({
                 'recall_number': recall_number,
                 'searched_product': product_name,
@@ -103,6 +111,7 @@ def search_ebay(product_name, recall_number, token, max_results=10):
                 'condition': condition,
                 'location': location,
                 'url': url_item,
+                'image_url': image_url,
                 'platform': 'eBay'
             })
 

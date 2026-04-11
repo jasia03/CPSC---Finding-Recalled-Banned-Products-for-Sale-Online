@@ -289,3 +289,45 @@ top = real_df.nlargest(10, 'confidence_score')[
     ['listing_title', 'recalled_product', 'confidence_score', 'verdict', 'price']
 ]
 print(top.to_string())
+
+# Step 11 — merge CLIP scores into main matches table
+print("\n--- MERGING CLIP SCORES INTO MATCHES ---")
+
+conn = sqlite3.connect('data/cpsc_recalls.db')
+
+# load both tables
+matches_df = pd.read_sql("SELECT * FROM matches", conn)
+clip_df = pd.read_sql("SELECT listing_title, clip_score, image_url FROM clip_matches", conn)
+
+# merge on listing title
+merged = matches_df.merge(clip_df, on='listing_title', how='left')
+merged['clip_score'] = merged['clip_score'].fillna(0)
+merged['image_url'] = merged['image_url'].fillna('')
+
+# update final confidence score — add clip bonus
+def add_clip_bonus(row):
+    if row['clip_score'] >= 65:
+        return min(100, row['confidence_score'] + 10)
+    elif row['clip_score'] >= 60:
+        return min(100, row['confidence_score'] + 5)
+    return row['confidence_score']
+
+merged['confidence_score'] = merged.apply(add_clip_bonus, axis=1)
+
+# update verdict based on new score
+def update_verdict(score):
+    if score >= 70:
+        return 'HIGH'
+    elif score >= 50:
+        return 'REVIEW'
+    return 'LOW'
+
+merged['verdict'] = merged['confidence_score'].apply(update_verdict)
+
+# save back
+merged.to_sql('matches', conn, if_exists='replace', index=False)
+conn.close()
+
+print(f"Updated {len(merged)} matches with CLIP scores")
+print(f"HIGH confidence matches: {len(merged[merged['verdict'] == 'HIGH'])}")
+print(f"REVIEW matches: {len(merged[merged['verdict'] == 'REVIEW'])}")
