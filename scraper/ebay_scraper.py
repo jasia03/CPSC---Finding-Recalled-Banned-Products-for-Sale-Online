@@ -152,7 +152,7 @@ else:
     all_listings = []
     found_count = 0
 
-    for index, row in recalls.head(50).iterrows():
+    for index, row in recalls.head(200).iterrows():
         product_name = row['Name of product']
         recall_number = row['Recall Number']
 
