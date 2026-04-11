@@ -260,6 +260,21 @@ print(f"Analyzed {len(real_results)} listings")
 
 # save to database
 real_df = pd.DataFrame(real_results)
+
+# add category from recalls database
+conn = sqlite3.connect('data/cpsc_recalls.db')
+recalls_with_cat = pd.read_sql("SELECT [Recall Number], Category FROM recalls", conn)
+conn.close()
+
+real_df = real_df.merge(
+    recalls_with_cat,
+    left_on='recall_number',
+    right_on='Recall Number',
+    how='left'
+)
+real_df['Category'] = real_df['Category'].fillna('Other')
+
+
 real_df['reasons'] = real_df['reasons'].apply(lambda x: ' | '.join(x))
 
 conn = sqlite3.connect('data/cpsc_recalls.db')

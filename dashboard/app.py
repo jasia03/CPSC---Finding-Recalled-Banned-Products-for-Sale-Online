@@ -61,11 +61,21 @@ with col2:
         value=50
     )
 
+# category filter
+categories = ['All'] + sorted(matches['Category'].dropna().unique().tolist()) if 'Category' in matches.columns else ['All']
+category_filter = st.selectbox(
+    "Filter by product category",
+    options=categories
+)
+
 # apply filters
 filtered = matches[
     (matches['verdict'].isin(verdict_filter)) &
     (matches['confidence_score'] >= min_confidence)
 ]
+
+if category_filter != 'All':
+    filtered = filtered[filtered['Category'] == category_filter]
 
 st.caption(f"Showing {len(filtered)} of {len(matches)} flagged listings")
 
@@ -88,16 +98,15 @@ def color_confidence(val):
     else:
         return 'color: #1b5e20'
 
-# select columns to display
 display_cols = [
     'listing_title',
     'recalled_product',
     'manufacturer',
+    'Category',
     'confidence_score',
     'verdict',
     'hazard'
 ]
-
 styled_table = filtered[display_cols].style\
     .map(color_verdict, subset=['verdict'])\
     .map(color_confidence, subset=['confidence_score'])

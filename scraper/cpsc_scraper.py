@@ -94,3 +94,46 @@ conn = sqlite3.connect('data/cpsc_recalls.db')
 test = pd.read_sql("SELECT COUNT(*) as total FROM recalls", conn)
 conn.close()
 print(f"Records in database: {test['total'][0]}")
+
+# Step 10 — add product categories
+print("\nAdding product categories...")
+
+def categorize_product(product_name):
+    product_name = product_name.lower()
+    
+    if any(word in product_name for word in ['baby', 'infant', 'toddler', 'child', 'kid', 'nursery', 'crib', 'stroller', 'walker', 'bouncer', 'bassinet', 'pacifier']):
+        return 'Baby & Children'
+    elif any(word in product_name for word in ['bike', 'bicycle', 'helmet', 'scooter', 'skateboard', 'hoverboard', 'trike']):
+        return 'Sports & Recreation'
+    elif any(word in product_name for word in ['dresser', 'bed', 'chair', 'table', 'sofa', 'furniture', 'mattress', 'frame']):
+        return 'Furniture'
+    elif any(word in product_name for word in ['charger', 'battery', 'power', 'electronic', 'monitor', 'cable', 'plug', 'outlet']):
+        return 'Electronics'
+    elif any(word in product_name for word in ['pool', 'swing', 'trampoline', 'playground', 'outdoor', 'grill', 'stove', 'camping']):
+        return 'Outdoor & Garden'
+    elif any(word in product_name for word in ['pajama', 'clothing', 'jacket', 'shirt', 'pants', 'costume', 'hoodie']):
+        return 'Clothing'
+    elif any(word in product_name for word in ['toy', 'game', 'puzzle', 'doll', 'magnet', 'fidget', 'lego']):
+        return 'Toys & Games'
+    elif any(word in product_name for word in ['serum', 'cream', 'lotion', 'spray', 'hair', 'skin', 'beauty', 'minoxidil']):
+        return 'Health & Beauty'
+    elif any(word in product_name for word in ['steamer', 'blender', 'cooker', 'fryer', 'appliance', 'vacuum', 'washer']):
+        return 'Home Appliances'
+    elif any(word in product_name for word in ['ladder', 'tool', 'saw', 'drill', 'planer', 'hardware']):
+        return 'Tools & Hardware'
+    else:
+        return 'Other'
+
+# apply categories to master dataframe
+conn = sqlite3.connect('data/cpsc_recalls.db')
+master = pd.read_sql("SELECT * FROM recalls", conn)
+
+master['Category'] = master['Name of product'].apply(categorize_product)
+
+# save back to database
+master.to_sql('recalls', conn, if_exists='replace', index=False)
+conn.close()
+
+# show category breakdown
+print(master['Category'].value_counts().to_string())
+print(f"\nCategories added to database!")
