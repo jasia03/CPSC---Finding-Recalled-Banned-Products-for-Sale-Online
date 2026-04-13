@@ -100,27 +100,117 @@ print("\nAdding product categories...")
 
 def categorize_product(product_name):
     product_name = product_name.lower()
-    
-    if any(word in product_name for word in ['baby', 'infant', 'toddler', 'child', 'kid', 'nursery', 'crib', 'stroller', 'walker', 'bouncer', 'bassinet', 'pacifier']):
+
+    if any(word in product_name for word in [
+        'baby', 'infant', 'toddler', 'child', 'kid', 'nursery', 'crib',
+        'stroller', 'walker', 'bouncer', 'bassinet', 'pacifier', 'cradle',
+        'playpen', 'play yard', 'high chair', 'booster', 'car seat',
+        'baby monitor', 'baby gate', 'sleep sack', 'swaddle', 'teether',
+        'baby carrier', 'baby swing', 'baby lounger', 'bath seat',
+        'changing table', 'diaper', 'formula', 'sippy', 'bottle',
+        'pediatric', 'juvenile', 'youth', 'children', 'kids'
+    ]):
         return 'Baby & Children'
-    elif any(word in product_name for word in ['bike', 'bicycle', 'helmet', 'scooter', 'skateboard', 'hoverboard', 'trike']):
+
+    elif any(word in product_name for word in [
+        'bike', 'bicycle', 'helmet', 'scooter', 'skateboard', 'hoverboard',
+        'trike', 'tricycle', 'kayak', 'paddle', 'ski', 'snowboard',
+        'ice axe', 'climbing', 'carabiner', 'harness', 'rope', 'tent',
+        'sleeping bag', 'backpack', 'hiking', 'camping gear', 'fishing',
+        'hunting', 'archery', 'sports', 'athletic', 'exercise', 'fitness',
+        'treadmill', 'elliptical', 'weight', 'dumbbell', 'yoga', 'gym'
+    ]):
         return 'Sports & Recreation'
-    elif any(word in product_name for word in ['dresser', 'bed', 'chair', 'table', 'sofa', 'furniture', 'mattress', 'frame']):
+
+    elif any(word in product_name for word in [
+        'dresser', 'bed', 'chair', 'table', 'sofa', 'furniture', 'mattress',
+        'frame', 'couch', 'cabinet', 'bookcase', 'bookshelf', 'wardrobe',
+        'armoire', 'nightstand', 'headboard', 'footboard', 'bunk',
+        'loft', 'futon', 'recliner', 'ottoman', 'bench', 'stool',
+        'desk', 'shelving', 'shelf', 'drawer', 'chest', 'canopy'
+    ]):
         return 'Furniture'
-    elif any(word in product_name for word in ['charger', 'battery', 'power', 'electronic', 'monitor', 'cable', 'plug', 'outlet']):
+
+    elif any(word in product_name for word in [
+        'charger', 'battery', 'power', 'electronic', 'monitor', 'cable',
+        'plug', 'outlet', 'laptop', 'computer', 'tablet', 'phone',
+        'speaker', 'headphone', 'earphone', 'camera', 'tv', 'television',
+        'remote', 'controller', 'switch', 'adapter', 'converter',
+        'inverter', 'solar', 'generator', 'extension cord', 'surge',
+        'radio', 'alarm', 'smart', 'wireless', 'bluetooth', 'usb'
+    ]):
         return 'Electronics'
-    elif any(word in product_name for word in ['pool', 'swing', 'trampoline', 'playground', 'outdoor', 'grill', 'stove', 'camping']):
+
+    elif any(word in product_name for word in [
+        'pool', 'swing', 'trampoline', 'playground', 'outdoor', 'grill',
+        'stove', 'camping', 'patio', 'deck', 'fence', 'gate', 'ladder',
+        'lawn', 'garden', 'hose', 'sprinkler', 'mower', 'trimmer',
+        'chainsaw', 'hedge', 'leaf blower', 'pressure washer', 'shed',
+        'canopy tent', 'umbrella', 'hammock', 'fire pit', 'bbq',
+        'barbecue', 'propane', 'butane', 'fuel', 'above ground'
+    ]):
         return 'Outdoor & Garden'
-    elif any(word in product_name for word in ['pajama', 'clothing', 'jacket', 'shirt', 'pants', 'costume', 'hoodie']):
+
+    elif any(word in product_name for word in [
+        'pajama', 'clothing', 'jacket', 'shirt', 'pants', 'costume',
+        'hoodie', 'sweater', 'dress', 'skirt', 'shorts', 'jeans',
+        'coat', 'gloves', 'hat', 'scarf', 'sock', 'shoe', 'boot',
+        'sandal', 'sneaker', 'slipper', 'apparel', 'uniform', 'vest',
+        'swimsuit', 'bikini', 'leggings', 'underwear', 'nightgown'
+    ]):
         return 'Clothing'
-    elif any(word in product_name for word in ['toy', 'game', 'puzzle', 'doll', 'magnet', 'fidget', 'lego']):
+
+    elif any(word in product_name for word in [
+        'toy', 'game', 'puzzle', 'doll', 'magnet', 'fidget', 'lego',
+        'block', 'marble', 'ball', 'kite', 'yo-yo', 'action figure',
+        'stuffed', 'plush', 'board game', 'card game', 'craft',
+        'art set', 'paint', 'clay', 'slime', 'kinetic', 'sand',
+        'water gun', 'foam', 'nerf', 'remote control', 'rc car',
+        'drone', 'robot', 'science kit', 'building set', 'train set'
+    ]):
         return 'Toys & Games'
-    elif any(word in product_name for word in ['serum', 'cream', 'lotion', 'spray', 'hair', 'skin', 'beauty', 'minoxidil']):
+
+    elif any(word in product_name for word in [
+        'serum', 'cream', 'lotion', 'spray', 'hair', 'skin', 'beauty',
+        'minoxidil', 'shampoo', 'conditioner', 'makeup', 'cosmetic',
+        'lipstick', 'mascara', 'foundation', 'blush', 'eyeshadow',
+        'nail', 'perfume', 'cologne', 'deodorant', 'sunscreen',
+        'moisturizer', 'toner', 'cleanser', 'scrub', 'mask',
+        'supplement', 'vitamin', 'probiotic', 'protein powder',
+        'weight loss', 'detox', 'essential oil', 'beard', 'growth'
+    ]):
         return 'Health & Beauty'
-    elif any(word in product_name for word in ['steamer', 'blender', 'cooker', 'fryer', 'appliance', 'vacuum', 'washer']):
+
+    elif any(word in product_name for word in [
+        'steamer', 'blender', 'cooker', 'fryer', 'appliance', 'vacuum',
+        'washer', 'dryer', 'dishwasher', 'refrigerator', 'freezer',
+        'microwave', 'toaster', 'coffee', 'espresso', 'juicer',
+        'mixer', 'food processor', 'instant pot', 'air fryer',
+        'rice cooker', 'slow cooker', 'pressure cooker', 'griddle',
+        'waffle', 'sandwich', 'panini', 'kettle', 'water heater',
+        'humidifier', 'dehumidifier', 'air purifier', 'fan', 'heater',
+        'iron', 'sewing', 'knitting', 'pan', 'skillet', 'cookware'
+    ]):
         return 'Home Appliances'
-    elif any(word in product_name for word in ['ladder', 'tool', 'saw', 'drill', 'planer', 'hardware']):
+
+    elif any(word in product_name for word in [
+        'ladder', 'tool', 'saw', 'drill', 'planer', 'hardware',
+        'screwdriver', 'wrench', 'hammer', 'nail gun', 'staple gun',
+        'sander', 'grinder', 'router', 'jigsaw', 'circular saw',
+        'table saw', 'miter saw', 'band saw', 'lathe', 'press',
+        'welder', 'torch', 'compressor', 'generator', 'jack',
+        'hoist', 'winch', 'cable', 'wire', 'pipe', 'fitting'
+    ]):
         return 'Tools & Hardware'
+
+    elif any(word in product_name for word in [
+        'bed rail', 'rail', 'walker', 'wheelchair', 'cane', 'crutch',
+        'brace', 'bandage', 'first aid', 'thermometer', 'blood pressure',
+        'pulse', 'glucose', 'medical', 'surgical', 'hospital',
+        'mobility', 'lift', 'grab bar', 'bath bench', 'shower chair'
+    ]):
+        return 'Medical & Mobility'
+
     else:
         return 'Other'
 
