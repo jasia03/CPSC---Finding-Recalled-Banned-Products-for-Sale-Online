@@ -44,7 +44,7 @@ with col4:
     # Step 3 — filters
 st.subheader("Filters")
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
     verdict_filter = st.multiselect(
@@ -61,6 +61,12 @@ with col2:
         value=50
     )
 
+with col3:
+    platforms = ['All'] + sorted(matches['platform'].dropna().unique().tolist())
+    platform_filter = st.selectbox(
+        "Filter by platform",
+        options=platforms
+    )
 # category filter
 categories = ['All'] + sorted(matches['Category'].dropna().unique().tolist()) if 'Category' in matches.columns else ['All']
 category_filter = st.selectbox(
@@ -76,6 +82,9 @@ filtered = matches[
 
 if category_filter != 'All':
     filtered = filtered[filtered['Category'] == category_filter]
+
+if platform_filter != 'All':
+    filtered = filtered[filtered['platform'] == platform_filter]
 
 st.caption(f"Showing {len(filtered)} of {len(matches)} flagged listings")
 
