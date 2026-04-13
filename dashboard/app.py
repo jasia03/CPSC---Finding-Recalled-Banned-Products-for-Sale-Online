@@ -105,13 +105,24 @@ display_cols = [
     'Category',
     'confidence_score',
     'verdict',
-    'hazard'
+    'hazard',
+    'url'
 ]
 styled_table = filtered[display_cols].style\
     .map(color_verdict, subset=['verdict'])\
     .map(color_confidence, subset=['confidence_score'])
 
-st.dataframe(styled_table, use_container_width=True, height=300)
+st.dataframe(
+    styled_table,
+    column_config={
+        "url": st.column_config.LinkColumn(
+            "listing link",
+            display_text="open on eBay"
+        )
+    },
+    width='stretch',
+    height=300
+)
 
 # Step 5 — analytics charts
 st.subheader("Analytics")
@@ -190,8 +201,10 @@ if selected_listing:
             st.warning("Marked as false positive and removed from queue")
     
     with col3:
-        if st.button("🔍 View on eBay"):
-            st.info("eBay link will appear here once scraper is connected")
+        if detail['url']:
+            st.link_button("🔍 View on eBay", detail['url'])
+        else:
+            st.button("🔍 View on eBay", disabled=True)
 
 # Step 7 — export button
 st.subheader("Export")
