@@ -228,3 +228,78 @@ st.download_button(
     file_name="cpsc_flagged_listings.csv",
     mime="text/csv"
 )
+
+# Sellers Tab
+st.divider()
+st.subheader("Flagged Sellers")
+st.caption("Sellers with multiple recalled product listings — potential repeat offenders")
+
+# load seller data
+@st.cache_data
+def load_sellers():
+    conn = sqlite3.connect('data/cpsc_recalls.db')
+    try:
+        sellers = pd.read_sql("SELECT * FROM seller_flags ORDER BY high_confidence DESC", conn)
+    except:
+        sellers = pd.DataFrame()
+    conn.close()
+    return sellers
+
+sellers = load_sellers()
+
+if len(sellers) == 0:
+    st.info("Run matcher/seller_analysis.py to generate seller data")
+else:
+    # seller summary metrics
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Flagged Sellers", len(sellers))
+    with col2:
+        high_risk = len(sellers[sellers['risk_level'] == 'HIGH RISK'])
+        st.metric("High Risk Sellers", high_risk)
+    with col3:
+        medium_risk = len(sellers[sellers['risk_level'] == 'MEDIUM RISK'])
+        st.metric("Medium Risk Sellers", medium_risk)
+
+    # seller risk filter
+    risk_filter = st.multiselect(
+        "Filter by risk level",
+        options=['HIGH RISK', 'MEDIUM RISK', 'LOW RISK'],
+        default=['HIGH RISK', 'MEDIUM RISK']
+    )
+
+    filtered_sellers = sellers[sellers['risk_level'].isin(risk_filter)]
+    st.caption(f"Showing {len(filtered_sellers)} sellers")
+
+    # color code risk level
+    def color_risk(val):
+        if val == 'HIGH RISK':
+            return 'background-color: #ffcccc; color: #8b0000'
+        elif val == 'MEDIUM RISK':
+            return 'background-color: #fff3cc; color: #7d6608'
+        else:
+            return 'background-color: #e8f5e9; color: #1b5e20'
+
+    display_seller_cols = [
+        'seller_username',
+        'total_flagged',
+        'high_confidence',
+        'risk_level',
+        'feedback_score',
+        'feedback_pct',
+        'recalled_products'
+    ]
+
+    styled_sellers = filtered_sellers[display_seller_cols].style\
+        .map(color_risk, subset=['risk_level'])
+
+    st.dataframe(styled_sellers, width='stretch', height=400)
+
+    # export sellers
+    seller_csv = filtered_sellers[display_seller_cols].to_csv(index=False)
+    st.download_button(
+        label="Download flagged sellers as CSV",
+        data=seller_csv,
+        file_name="cpsc_flagged_sellers.csv",
+        mime="text/csv"
+    )

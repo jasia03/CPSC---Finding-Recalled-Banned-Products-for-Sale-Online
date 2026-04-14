@@ -103,6 +103,12 @@ def search_ebay(product_name, recall_number, token, max_results=10):
             if not image_url:
                 image_url = item.get('image', {}).get('imageUrl', '')
 
+            # extract seller info
+            seller = item.get('seller', {})
+            seller_username = seller.get('username', 'unknown')
+            seller_feedback = seller.get('feedbackScore', 0)
+            seller_percentage = seller.get('feedbackPercentage', 'N/A')
+
             results.append({
                 'recall_number': recall_number,
                 'searched_product': product_name,
@@ -112,7 +118,10 @@ def search_ebay(product_name, recall_number, token, max_results=10):
                 'location': location,
                 'url': url_item,
                 'image_url': image_url,
-                'platform': 'eBay'
+                'platform': 'eBay',
+                'seller_username': seller_username,
+                'seller_feedback': seller_feedback,
+                'seller_feedback_pct': seller_percentage
             })
 
         return results
