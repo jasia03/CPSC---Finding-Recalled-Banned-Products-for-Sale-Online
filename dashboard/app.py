@@ -287,13 +287,24 @@ else:
         'risk_level',
         'feedback_score',
         'feedback_pct',
-        'recalled_products'
+        'recalled_products',
+        'ebay_profile'
     ]
 
     styled_sellers = filtered_sellers[display_seller_cols].style\
         .map(color_risk, subset=['risk_level'])
 
-    st.dataframe(styled_sellers, width='stretch', height=400)
+    st.dataframe(
+        styled_sellers,
+        column_config={
+            "ebay_profile": st.column_config.LinkColumn(
+                "eBay profile",
+                display_text="view seller"
+            )
+        },
+        width='stretch',
+        height=400
+    )
 
     # export sellers
     seller_csv = filtered_sellers[display_seller_cols].to_csv(index=False)

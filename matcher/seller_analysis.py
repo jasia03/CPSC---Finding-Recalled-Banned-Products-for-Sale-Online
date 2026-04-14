@@ -40,6 +40,11 @@ seller_stats = flagged.groupby('seller_username').agg(
     recalled_products=('recalled_product', lambda x: ', '.join(x.unique()[:3]))
 ).reset_index()
 
+# add direct eBay profile link
+seller_stats['ebay_profile'] = seller_stats['seller_username'].apply(
+    lambda x: f"https://www.ebay.com/usr/{x}"
+)
+
 # Step 4 — classify sellers by risk level
 def seller_risk(row):
     if row['high_confidence'] >= 2:
