@@ -163,8 +163,6 @@ streamlit run dashboard/app.py
 ---
 
 ## eSAFE Integration
-This system is designed to integrate with CPSC's eSAFE Rapid Tool. 
-Each flagged listing is stored with a structured JSON schema that can be consumed by eSAFE via a REST API or webhook. See docs/esafe_integration.md for the full integration architecture.
 
 ---
 
