@@ -280,6 +280,7 @@ else:
         else:
             return 'background-color: #e8f5e9; color: #1b5e20'
 
+    # only include ebay_profile if it exists in the dataframe
     display_seller_cols = [
         'seller_username',
         'total_flagged',
@@ -287,21 +288,24 @@ else:
         'risk_level',
         'feedback_score',
         'feedback_pct',
-        'recalled_products',
-        'ebay_profile'
+        'recalled_products'
     ]
+    if 'ebay_profile' in filtered_sellers.columns:
+        display_seller_cols.append('ebay_profile')
 
     styled_sellers = filtered_sellers[display_seller_cols].style\
         .map(color_risk, subset=['risk_level'])
 
+    col_config = {}
+    if 'ebay_profile' in display_seller_cols:
+        col_config["ebay_profile"] = st.column_config.LinkColumn(
+            "eBay profile",
+            display_text="view seller"
+        )
+
     st.dataframe(
         styled_sellers,
-        column_config={
-            "ebay_profile": st.column_config.LinkColumn(
-                "eBay profile",
-                display_text="view seller"
-            )
-        },
+        column_config=col_config,
         width='stretch',
         height=400
     )
