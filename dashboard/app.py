@@ -122,16 +122,16 @@ styled_table = filtered[display_cols].style\
     .map(color_confidence, subset=['confidence_score'])
 
 st.dataframe(
-    styled_table,
-    column_config={
-        "url": st.column_config.LinkColumn(
-            "listing link",
-            display_text="open on eBay"
-        )
-    },
-    width='stretch',
-    height=300
-)
+        styled_table,
+        column_config={
+            "url": st.column_config.LinkColumn(
+                "listing link",
+                display_text="open listing"
+            )
+        },
+        width='stretch',
+        height=300
+    )
 
 # Step 5 — analytics charts
 st.subheader("Analytics")
