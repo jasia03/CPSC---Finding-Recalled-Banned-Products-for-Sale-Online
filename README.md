@@ -87,7 +87,7 @@ multiple recalled product listings are classified by risk level:
 
 ---
 ## Project Structure
-
+```
 cpsc-recall-finder/
 ├── scraper/
 │   ├── cpsc_scraper.py          # loads and cleans CPSC recall database
@@ -105,7 +105,7 @@ cpsc-recall-finder/
 ├── docs/
 │   └── esafe_integration.md     # eSAFE integration architecture
 └── requirements.txt
----
+```
 
 ## How To Run
 
