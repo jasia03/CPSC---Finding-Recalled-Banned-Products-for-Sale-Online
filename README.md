@@ -11,13 +11,12 @@ An automated system that identifies recalled and banned consumer products listed
 ---
 
 ## Results
-- **9,318** recalled products loaded from CPSC database for the scope of this project
-- **52,140** listings processed across eBay and Craigslist
-- **12,912** HIGH confidence matches
-- **3,552** CRITICAL hazard listings flagged
-- **372** unique sellers flagged from eBay (234 HIGH RISK repeat offenders)
+- **9,318** recalled products loaded from CPSC database (full recall history as of April 2026)
+- **20,007** unique listings found across eBay and Craigslist
+- **5,112** HIGH confidence matches
+- **372** unique sellers flagged — 234 HIGH RISK repeat offenders
 - Baby walkers (federally banned) found selling for $15–$40
-- Dashboard sorted by hazard severity by default, with CRITICAL listings appearing first
+- Dashboard sorted by hazard severity by default — CRITICAL listings appear first
 - Human-in-the-loop feedback system records every reviewer decision
 - 10 US cities covered on Craigslist
 
