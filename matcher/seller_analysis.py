@@ -50,14 +50,15 @@ seller_stats['ebay_profile'] = seller_stats['seller_username'].apply(
 
 # Step 4 — classify sellers by risk level
 def seller_risk(row):
-    # factor in both listing count and hazard severity
-    critical_listings = row.get('critical_count', 0)
-    
-    if critical_listings >= 2 or row['high_confidence'] >= 3:
+    critical = row.get('critical_count', 0)
+    high = row['high_confidence']
+    total = row['total_flagged']
+
+    if critical >= 3 or high >= 3:
         return 'HIGH RISK'
-    elif critical_listings >= 1 or row['high_confidence'] >= 2:
+    elif critical >= 2 or high >= 2:
         return 'HIGH RISK'
-    elif row['high_confidence'] >= 1 or row['total_flagged'] >= 3:
+    elif (critical >= 1 and high >= 1) or high >= 1 or total >= 3:
         return 'MEDIUM RISK'
     else:
         return 'LOW RISK'
