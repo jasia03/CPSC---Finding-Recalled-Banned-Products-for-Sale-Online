@@ -11,12 +11,14 @@ An automated system that identifies recalled and banned consumer products listed
 ---
 
 ## Results
-- **9,318** recalled products loaded from CPSC database
-- **26,365** listings flagged across eBay and Craigslist
-- **4,849** HIGH confidence matches
-- **320** unique sellers flagged — 26 HIGH RISK repeat offenders
+- **9,318** recalled products loaded from CPSC database for the scope of this project
+- **52,140** listings processed across eBay and Craigslist
+- **12,912** HIGH confidence matches
+- **3,552** CRITICAL hazard listings flagged
+- **372** unique sellers flagged from eBay (234 HIGH RISK repeat offenders)
 - Baby walkers (federally banned) found selling for $15–$40
-- Infant walkers, bed rails, baby bath seats, pools all flagged
+- Dashboard sorted by hazard severity by default, with CRITICAL listings appearing first
+- Human-in-the-loop feedback system records every reviewer decision
 - 10 US cities covered on Craigslist
 
 ---
@@ -49,6 +51,9 @@ Counts meaningful shared words between the recalled product name and listing tit
 **Layer 4 — CLIP Image Matching**
 Downloads listing photos and compares them against recalled product descriptions using OpenAI's CLIP model. Adds bonus confidence points when images visually match the recalled product.
 
+**Layer 5 — Hazard Severity Classification**
+Analyzes the CPSC hazard description for each matched recall using keyword detection to classify the danger level as CRITICAL (death, strangulation, drowning, electrocution), SERIOUS (injury, fall hazard, choking, fire, toxic), or MODERATE (minor injury, skin irritation, property damage). Matched listings inherit the hazard severity of their recalled product and the dashboard sorts by severity by default so the most dangerous listings appear first for reviewers.
+
 ### Confidence Scoring
 | Score | Verdict | Action |
 |-------|---------|--------|
@@ -74,7 +79,14 @@ multiple recalled product listings are classified by risk level:
 - Analytics charts: verdict breakdown and confidence distribution
 - Seller flagging tab with risk level classification
 - CSV export for listings and sellers
+- Hazard severity filter and color coding (CRITICAL / SERIOUS / MODERATE)
+- Dashboard sorted by hazard level by default — most dangerous listings first
+- Seller table shows critical and serious hazard counts per seller
+- Reviewer feedback saved to database for system recalibration over time
 
+---
+## Human-in-the-Loop Learning
+Every reviewer decision (Confirm Match or False Positive) is saved to a reviewer_feedback table with the listing details, confidence score, hazard level, and timestamp. Running matcher/recalibrate.py analyzes accumulated feedback and recommends adjusted confidence thresholds based on what reviewers actually confirm versus reject. The system improves in accuracy the more it is used.
 ---
 
 ## Platforms Covered
@@ -90,21 +102,23 @@ multiple recalled product listings are classified by risk level:
 ```
 cpsc-recall-finder/
 ├── scraper/
-│   ├── cpsc_scraper.py          # loads and cleans CPSC recall database
-│   ├── ebay_scraper.py          # searches eBay via Browse API
+│   ├── cpsc_scraper.py          # loads, cleans, and categorizes CPSC recall database
+│   ├── ebay_scraper.py          # searches eBay via Browse API with seller data
 │   └── craigslist_scraper.py    # scrapes Craigslist across 10 US cities
 ├── matcher/
 │   ├── matcher.py               # AI matching engine and confidence scoring
 │   ├── image_matcher.py         # CLIP image-text matching
-│   └── seller_analysis.py       # seller flagging and risk classification
+│   ├── seller_analysis.py       # seller flagging and hazard-weighted risk classification
+│   ├── rebuild_matches.py       # rebuilds matches table from existing data
+│   └── recalibrate.py           # recalibrates confidence thresholds from reviewer feedback
 ├── dashboard/
-│   └── app.py                   # Streamlit dashboard
+│   └── app.py                   # Streamlit dashboard with hazard severity and seller flagging
 ├── data/
 │   ├── cpsc_recalls.db          # SQLite database
 │   └── *.csv                    # raw CPSC export files
 ├── docs/
 │   └── esafe_integration.md     # eSAFE integration architecture
-└── requirements.txt
+└── requirements.t
 ```
 
 ## How To Run
@@ -138,11 +152,14 @@ EBAY_CERT_ID= your_ebay_cert_id
 python scraper/cpsc_scraper.py
 python scraper/ebay_scraper.py
 python scraper/craigslist_scraper.py
-python matcher/matcher.py
+python matcher/rebuild_matches.py
 python matcher/image_matcher.py
 python matcher/seller_analysis.py
 streamlit run dashboard/app.py
 ```
+
+# To recalibrate thresholds after reviewer feedback:
+python matcher/recalibrate.py
 
 ---
 
@@ -159,7 +176,6 @@ streamlit run dashboard/app.py
 | Streamlit | Interactive dashboard |
 | Plotly | Analytics charts |
 | scikit-learn | Cosine similarity calculations |
-
 ---
 
 ## eSAFE Integration
