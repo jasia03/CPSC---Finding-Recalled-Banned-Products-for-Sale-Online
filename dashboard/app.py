@@ -224,15 +224,77 @@ if selected_listing:
     # action buttons
     st.markdown("**Reviewer Actions**")
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         if st.button("✅ Confirm Match", type="primary"):
-            st.success("Match confirmed and flagged for removal request")
-    
+            conn = sqlite3.connect('data/cpsc_recalls.db')
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS reviewer_feedback (
+                    listing_title TEXT,
+                    recalled_product TEXT,
+                    confidence_score REAL,
+                    hazard_level TEXT,
+                    verdict TEXT,
+                    platform TEXT,
+                    url TEXT,
+                    reviewer_decision TEXT,
+                    reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            conn.execute("""
+                INSERT INTO reviewer_feedback 
+                (listing_title, recalled_product, confidence_score, 
+                hazard_level, verdict, platform, url, reviewer_decision)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                detail['listing_title'],
+                detail['recalled_product'],
+                detail['confidence_score'],
+                detail.get('hazard_level', ''),
+                detail['verdict'],
+                detail.get('platform', ''),
+                detail.get('url', ''),
+                'CONFIRMED'
+            ))
+            conn.commit()
+            conn.close()
+            st.success("Match confirmed and saved to reviewer feedback")
+
     with col2:
         if st.button("❌ False Positive"):
-            st.warning("Marked as false positive and removed from queue")
-    
+            conn = sqlite3.connect('data/cpsc_recalls.db')
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS reviewer_feedback (
+                    listing_title TEXT,
+                    recalled_product TEXT,
+                    confidence_score REAL,
+                    hazard_level TEXT,
+                    verdict TEXT,
+                    platform TEXT,
+                    url TEXT,
+                    reviewer_decision TEXT,
+                    reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            conn.execute("""
+                INSERT INTO reviewer_feedback 
+                (listing_title, recalled_product, confidence_score,
+                hazard_level, verdict, platform, url, reviewer_decision)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                detail['listing_title'],
+                detail['recalled_product'],
+                detail['confidence_score'],
+                detail.get('hazard_level', ''),
+                detail['verdict'],
+                detail.get('platform', ''),
+                detail.get('url', ''),
+                'FALSE_POSITIVE'
+            ))
+            conn.commit()
+            conn.close()
+            st.warning("Marked as false positive and saved to reviewer feedback")
+
     with col3:
         if detail['url']:
             st.link_button("🔍 View on eBay", detail['url'])
