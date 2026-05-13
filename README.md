@@ -38,20 +38,20 @@ An end-to-end automated pipeline that:
 
 ## How It Works
 
-### Matching Engine — 4 Layers
-**Layer 1 — AI Text Similarity**
+### Matching Engine - 4 Layers
+**Layer 1 - AI Text Similarity**
 Uses sentence-transformers (all-MiniLM-L6-v2) to convert product names into mathematical embeddings and measure semantic similarity. Catches listings that describe recalled products in different words.
 
-**Layer 2 — Brand Name Detection**
+**Layer 2 - Brand Name Detection**
 Checks if the brand or manufacturer name from the recall record appears in the listing title. Adds 20 confidence points if found.
 
-**Layer 3 — Word Overlap**
+**Layer 3 - Word Overlap**
 Counts meaningful shared words between the recalled product name and listing title. Adds up to 20 confidence points.
 
-**Layer 4 — CLIP Image Matching**
+**Layer 4 - CLIP Image Matching**
 Downloads listing photos and compares them against recalled product descriptions using OpenAI's CLIP model. Adds bonus confidence points when images visually match the recalled product.
 
-**Layer 5 — Hazard Severity Classification**
+**Layer 5 - Hazard Severity Classification**
 Analyzes the CPSC hazard description for each matched recall using keyword detection to classify the danger level as CRITICAL (death, strangulation, drowning, electrocution), SERIOUS (injury, fall hazard, choking, fire, toxic), or MODERATE (minor injury, skin irritation, property damage). Matched listings inherit the hazard severity of their recalled product and the dashboard sorts by severity by default so the most dangerous listings appear first for reviewers.
 
 ### Confidence Scoring
@@ -62,8 +62,7 @@ Analyzes the CPSC hazard description for each matched recall using keyword detec
 | 0–49% | LOW | Likely not a recalled product |
 
 ### Seller Flagging
-Tracks seller usernames across all flagged listings. Sellers with 
-multiple recalled product listings are classified by risk level:
+Tracks seller usernames across all flagged listings. Sellers with multiple recalled product listings are classified by risk level:
 - HIGH RISK — 2+ HIGH confidence recalled listings
 - MEDIUM RISK — 1 HIGH confidence or 3+ flagged listings
 - LOW RISK — single flagged listing
@@ -80,7 +79,7 @@ multiple recalled product listings are classified by risk level:
 - Seller flagging tab with risk level classification
 - CSV export for listings and sellers
 - Hazard severity filter and color coding (CRITICAL / SERIOUS / MODERATE)
-- Dashboard sorted by hazard level by default — most dangerous listings first
+- Dashboard sorted by hazard level by default (most dangerous listings first)
 - Seller table shows critical and serious hazard counts per seller
 - Reviewer feedback saved to database for system recalibration over time
 
