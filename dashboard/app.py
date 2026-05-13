@@ -372,6 +372,8 @@ else:
         'total_flagged',
         'high_confidence',
         'risk_level',
+        'critical_count',
+        'serious_count',
         'feedback_score',
         'feedback_pct',
         'recalled_products'

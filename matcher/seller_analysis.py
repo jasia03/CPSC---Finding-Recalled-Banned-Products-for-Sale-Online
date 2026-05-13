@@ -16,7 +16,7 @@ print(f"Loaded {len(listings)} eBay listings with seller data")
 
 # Step 2 — join listings with match verdicts
 listings_with_verdicts = listings.merge(
-    matches[['listing_title', 'confidence_score', 'verdict', 'recalled_product']],
+    matches[['listing_title', 'confidence_score', 'verdict', 'recalled_product', 'hazard_level', 'hazard_severity']],
     on='listing_title',
     how='left'
 )
@@ -37,7 +37,10 @@ seller_stats = flagged.groupby('seller_username').agg(
     max_confidence=('confidence_score', 'max'),
     feedback_score=('seller_feedback', 'first'),
     feedback_pct=('seller_feedback_pct', 'first'),
-    recalled_products=('recalled_product', lambda x: ', '.join(x.unique()[:3]))
+    recalled_products=('recalled_product', lambda x: ', '.join(x.unique()[:3])),
+    critical_count=('hazard_level', lambda x: (x == 'CRITICAL').sum()),
+    serious_count=('hazard_level', lambda x: (x == 'SERIOUS').sum()),
+    moderate_count=('hazard_level', lambda x: (x == 'MODERATE').sum())
 ).reset_index()
 
 # add direct eBay profile link
@@ -47,7 +50,12 @@ seller_stats['ebay_profile'] = seller_stats['seller_username'].apply(
 
 # Step 4 — classify sellers by risk level
 def seller_risk(row):
-    if row['high_confidence'] >= 2:
+    # factor in both listing count and hazard severity
+    critical_listings = row.get('critical_count', 0)
+    
+    if critical_listings >= 2 or row['high_confidence'] >= 3:
+        return 'HIGH RISK'
+    elif critical_listings >= 1 or row['high_confidence'] >= 2:
         return 'HIGH RISK'
     elif row['high_confidence'] >= 1 or row['total_flagged'] >= 3:
         return 'MEDIUM RISK'
