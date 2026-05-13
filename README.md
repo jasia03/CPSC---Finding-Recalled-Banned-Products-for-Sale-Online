@@ -83,10 +83,8 @@ Tracks seller usernames across all flagged listings. Sellers with multiple recal
 - Seller table shows critical and serious hazard counts per seller
 - Reviewer feedback saved to database for system recalibration over time
 
----
 ## Human-in-the-Loop Learning
 Every reviewer decision (Confirm Match or False Positive) is saved to a reviewer_feedback table with the listing details, confidence score, hazard level, and timestamp. Running matcher/recalibrate.py analyzes accumulated feedback and recommends adjusted confidence thresholds based on what reviewers actually confirm versus reject. The system improves in accuracy the more it is used.
----
 
 ## Platforms Covered
 | Platform | Method | Status |
