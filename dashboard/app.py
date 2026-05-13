@@ -371,9 +371,9 @@ else:
         'seller_username',
         'total_flagged',
         'high_confidence',
-        'risk_level',
         'critical_count',
         'serious_count',
+        'risk_level',
         'feedback_score',
         'feedback_pct',
         'recalled_products'
