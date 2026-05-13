@@ -96,6 +96,7 @@ CITIES = [
 # Step 2 — search craigslist using JSON data in page source
 def search_craigslist(product_name, recall_number, city):
 
+    search_query = product_name.replace(' ', '%20')
     short_term = get_search_term(product_name)
     search_query = short_term.replace(' ', '%20')
     url = f"https://{city}.craigslist.org/search/sss?query={search_query}"
@@ -112,9 +113,18 @@ def search_craigslist(product_name, recall_number, city):
 
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # find the JSON data embedded in the page
-        json_tag = soup.find('script', id='ld_searchpage_results')
+        # get all listing URLs that contain /d/ in order
+        listing_urls = []
+        for a in soup.find_all('a', href=True):
+            href = a.get('href', '')
+            if '/d/' in href:
+                if not href.startswith('http'):
+                    href = f"https://{city}.craigslist.org{href}"
+                if href not in listing_urls:
+                    listing_urls.append(href)
 
+        # get JSON data for titles and prices
+        json_tag = soup.find('script', id='ld_searchpage_results')
         if not json_tag:
             return []
 
@@ -122,16 +132,19 @@ def search_craigslist(product_name, recall_number, city):
         items = data.get('itemListElement', [])
 
         results = []
-        for item in items:
+        for i, item in enumerate(items):
             listing = item.get('item', {})
-
             title = listing.get('name', '')
-            url_item = listing.get('url', '')
             price = listing.get('offers', {}).get('price', 'N/A')
             currency = listing.get('offers', {}).get('priceCurrency', 'USD')
-            location = listing.get('offers', {}).get('availableAtOrFrom', {}).get('name', city)
+            location = listing.get('offers', {}).get(
+                'availableAtOrFrom', {}
+            ).get('name', city)
             images = listing.get('image', [])
             image_url = images[0] if images else ''
+
+            # match URL by position
+            url_item = listing_urls[i] if i < len(listing_urls) else ''
 
             if title:
                 price_str = f"{currency} {price}" if price != 'N/A' else 'N/A'

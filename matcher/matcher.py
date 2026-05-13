@@ -263,7 +263,10 @@ real_df = pd.DataFrame(real_results)
 
 # add category from recalls database
 conn = sqlite3.connect('data/cpsc_recalls.db')
-recalls_with_cat = pd.read_sql("SELECT [Recall Number], Category FROM recalls", conn)
+recalls_with_cat = pd.read_sql(
+    "SELECT [Recall Number], Category, hazard_severity, hazard_level FROM recalls",
+    conn
+)
 conn.close()
 
 real_df = real_df.merge(
@@ -273,6 +276,8 @@ real_df = real_df.merge(
     how='left'
 )
 real_df['Category'] = real_df['Category'].fillna('Other')
+real_df['hazard_severity'] = real_df['hazard_severity'].fillna(1)
+real_df['hazard_level'] = real_df['hazard_level'].fillna('MODERATE')
 
 
 real_df['reasons'] = real_df['reasons'].apply(lambda x: ' | '.join(x))

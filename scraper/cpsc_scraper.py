@@ -98,6 +98,33 @@ print(f"Records in database: {test['total'][0]}")
 # Step 10 — add product categories
 print("\nAdding product categories...")
 
+def score_hazard_severity(hazard_description):
+    hazard = hazard_description.lower()
+
+    # Level 3 — Critical (death, life threatening)
+    if any(word in hazard for word in [
+        'death', 'fatal', 'fatality', 'fatalities', 'killed', 'drowning',
+        'drown', 'strangulation', 'strangle', 'suffocation', 'suffocate',
+        'electrocution', 'electrocute', 'carbon monoxide', 'fire hazard',
+        'explosion', 'explode', 'burn hazard', 'severe burn'
+    ]):
+        return 3, 'CRITICAL'
+
+    # Level 2 — Serious (injury, hospitalization)
+    elif any(word in hazard for word in [
+        'injury', 'injuries', 'laceration', 'fracture', 'fall hazard',
+        'fall risk', 'choking hazard', 'choke', 'entrapment', 'entrap',
+        'burn', 'fire', 'shock', 'electric shock', 'bleeding', 'bleed',
+        'hospitalization', 'emergency', 'poison', 'toxic', 'lead',
+        'contusion', 'concussion', 'impact', 'crush', 'tip over',
+        'tipover', 'collapse', 'break', 'sharp', 'puncture'
+    ]):
+        return 2, 'SERIOUS'
+
+    # Level 1 — Moderate (minor injury, property damage)
+    else:
+        return 1, 'MODERATE'
+
 def categorize_product(product_name):
     product_name = product_name.lower()
 
@@ -220,7 +247,15 @@ master = pd.read_sql("SELECT * FROM recalls", conn)
 
 master['Category'] = master['Name of product'].apply(categorize_product)
 
+master[['hazard_severity', 'hazard_level']] = master['Hazard Description'].apply(
+    lambda x: pd.Series(score_hazard_severity(x))
+)
+
+print("\nHazard severity breakdown:")
+print(master['hazard_level'].value_counts().to_string())
+
 # save back to database
+conn = sqlite3.connect('data/cpsc_recalls.db')
 master.to_sql('recalls', conn, if_exists='replace', index=False)
 conn.close()
 

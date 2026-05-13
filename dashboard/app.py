@@ -3,6 +3,8 @@ import pandas as pd
 import sqlite3
 import plotly.express as px
 
+pd.set_option("styler.render.max_elements", 500000)
+
 # page configuration
 st.set_page_config(
     page_title="CPSC Recall Finder",
@@ -74,14 +76,26 @@ category_filter = st.selectbox(
     options=categories
 )
 
+hazard_filter = st.multiselect(
+    "Filter by hazard level",
+    options=['CRITICAL', 'SERIOUS', 'MODERATE'],
+    default=['CRITICAL', 'SERIOUS', 'MODERATE']
+)
+
 # apply filters
 filtered = matches[
     (matches['verdict'].isin(verdict_filter)) &
     (matches['confidence_score'] >= min_confidence)
-]
+].sort_values(
+    ['hazard_severity', 'confidence_score'],
+    ascending=[False, False]
+)
 
 if category_filter != 'All':
     filtered = filtered[filtered['Category'] == category_filter]
+
+if hazard_filter:
+    filtered = filtered[filtered['hazard_level'].isin(hazard_filter)]
 
 if platform_filter != 'All':
     filtered = filtered[filtered['platform'] == platform_filter]
@@ -107,11 +121,20 @@ def color_confidence(val):
     else:
         return 'color: #1b5e20'
 
+def color_hazard(val):
+    if val == 'CRITICAL':
+        return 'background-color: #8b0000; color: #ffcccc'
+    elif val == 'SERIOUS':
+        return 'background-color: #7d4000; color: #ffe4cc'
+    else:
+        return 'background-color: #7d6608; color: #fff3cc'
+
 display_cols = [
     'listing_title',
     'recalled_product',
     'manufacturer',
     'Category',
+    'hazard_level',
     'confidence_score',
     'verdict',
     'hazard',
@@ -119,7 +142,8 @@ display_cols = [
 ]
 styled_table = filtered[display_cols].style\
     .map(color_verdict, subset=['verdict'])\
-    .map(color_confidence, subset=['confidence_score'])
+    .map(color_confidence, subset=['confidence_score'])\
+    .map(color_hazard, subset=['hazard_level'])
 
 st.dataframe(
         styled_table,
